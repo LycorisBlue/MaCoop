@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tuloss_coo/pages/Home/connexion.dart';
+import 'package:tuloss_coo/pages/cooperative/add.dart';
 import 'package:tuloss_coo/pages/cooperative/liste.dart';
-import 'package:tuloss_coo/pages/home.dart';
-import 'package:tuloss_coo/pages/inscription.dart';
+import 'package:tuloss_coo/pages/Home/home.dart';
+import 'package:tuloss_coo/pages/Home/inscription.dart';
 import 'package:tuloss_coo/pages/signature.dart';
 import 'package:tuloss_coo/widget/theme.dart';
 
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeClass.lightTheme,
       darkTheme: ThemeClass.darkTheme,
-      home: CooperativeListWidget(),
+      home: const HomePage(),
       debugShowCheckedModeBanner: false,
     );
   }

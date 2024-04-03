@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class InscriptionWidget extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  _InscriptionWidgetState createState() => _InscriptionWidgetState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _InscriptionWidgetState extends State<InscriptionWidget> {
+class _RegisterPageState extends State<RegisterPage> {
   String _typeUtilisateur = 'Membre';
   final _nomController = TextEditingController();
   final _prenomController = TextEditingController();

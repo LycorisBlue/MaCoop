@@ -92,7 +92,7 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
                       });
                     },
                     child: InputDecorator(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Date de création',
                         border: OutlineInputBorder(),
                       ),
@@ -114,7 +114,7 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: _imageFile == null
-                      ? Center(
+                      ? const Center(
                     child: Text('Logo'),
                   )
                       : Image.file(
@@ -142,34 +142,34 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _presidentController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Président',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _adgController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Administrateur de groupes (ADG)',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _localisationController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Localisation / Adresse du siège',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _telephoneController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Téléphone de la coopérative',
                 border: OutlineInputBorder(),
               ),
@@ -177,7 +177,7 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
             SizedBox(height: 16.0),
             Row(
               children: [
-                Text(
+                const Text(
                   'Sections',
                   style: TextStyle(
                     fontSize: 16.0,
@@ -220,13 +220,13 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
                   onPressed: () {
                     // Action pour enregistrer la coopérative
                   },
-                  child: Text('ENREGISTRER'),
+                  child: const Text('ENREGISTRER'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     // Action pour annuler
                   },
-                  child: Text('ANNULER'),
+                  child: const Text('ANNULER'),
                 ),
               ],
             ),

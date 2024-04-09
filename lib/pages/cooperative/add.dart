@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+import 'package:hive/hive.dart';
+import 'package:tuloss_coo/pages/cooperative/copy.dart';
 import 'dart:io';
 
-class AddCooperativeWidget extends StatefulWidget {
+import '../../models/coopModel.dart';
+
+
+
+class AddCooperative extends StatefulWidget {
   @override
-  _AddCooperativeWidgetState createState() => _AddCooperativeWidgetState();
+  _AddCooperativeState createState() => _AddCooperativeState();
 }
 
-class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
+class _AddCooperativeState extends State<AddCooperative> {
+  final _boxCoop = Hive.box("cooperative");
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _presidentController = TextEditingController();
   final TextEditingController _adgController = TextEditingController();
   final TextEditingController _localisationController = TextEditingController();
   final TextEditingController _telephoneController = TextEditingController();
-  DateTime _dateCreation = DateTime(1900, 1, 1);
+  DateTime _dateCreation = DateTime(2024, 1, 1);
   File? _imageFile;
   List<String> _sections = [];
 
@@ -30,6 +39,46 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
     setState(() {
       _sections.add('');
     });
+  }
+
+  Future<void> _saveFormData() async {
+    print("Let's go");
+    String finalImagePath = '';
+
+    if (_imageFile != null) {
+      final Directory appDocDir = await getApplicationDocumentsDirectory();
+      final Directory coopDir = Directory('${appDocDir.path}/coop');
+      if (!await coopDir.exists()) {
+        await coopDir.create(recursive: true);
+      }
+      final String newPath = path.join(coopDir.path, path.basename(_imageFile!.path));
+      final File newImage = await _imageFile!.copy(newPath);
+      finalImagePath = newImage.path;
+    }
+    print(finalImagePath);
+
+    FormData formData = FormData(
+      nom: _nomController.text,
+      president: _presidentController.text,
+      adg: _adgController.text,
+      localisation: _localisationController.text,
+      telephone: _telephoneController.text,
+      dateCreation: _dateCreation,
+      imagePath: finalImagePath,
+      sections: _sections,
+    );
+
+    List<dynamic> existingData = _boxCoop.get('data', defaultValue: []);
+    existingData.add(formData.toJson());
+
+    await _boxCoop.put('data', existingData);
+    print(_boxCoop.get('data'));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListeCooperative(),
+      ),
+    );
   }
 
   @override
@@ -218,13 +267,18 @@ class _AddCooperativeWidgetState extends State<AddCooperativeWidget> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Action pour enregistrer la coopérative
+                    _saveFormData();
                   },
                   child: const Text('ENREGISTRER'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Action pour annuler
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ListeCooperative(),
+                      ),
+                    );
                   },
                   child: const Text('ANNULER'),
                 ),

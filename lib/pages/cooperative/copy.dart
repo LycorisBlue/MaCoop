@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tuloss_coo/pages/cooperative/add.dart';
+
+import '../../models/coopModel.dart';
 
 class ListeCooperative extends StatefulWidget {
   @override
@@ -13,6 +18,33 @@ class _ListeCooperativeState extends State<ListeCooperative> {
     'https://i.pinimg.com/564x/77/11/e5/7711e5ec546bb22473563f6fdfaf32e1.jpg',
     'https://i.pinimg.com/564x/e4/34/ea/e434ea1eee78a08980baf5703b4d2761.jpg', // Ajoutez plus d'URLs ici si nécessaire
   ];
+
+  List<Cooperative> cooperatives = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCooperativesFromHive();
+  }
+
+  Future<void> _loadCooperativesFromHive() async {
+    final _boxCoop = await Hive.openBox('cooperative');
+    final cooperativeData = _boxCoop.get('data', defaultValue: []) as List<dynamic>;
+
+    setState(() {
+      cooperatives = cooperativeData.map((data) => Cooperative(
+        nom: data['nom'],
+        president: data['president'],
+        adg: data['adg'],
+        localisation: data['localisation'],
+        telephone: data['telephone'],
+        dateCreation: DateTime.parse(data['dateCreation']),
+        imagePath: data['imagePath'],
+        sections: List<String>.from(data['sections']),
+      )).toList();
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +77,12 @@ class _ListeCooperativeState extends State<ListeCooperative> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCooperative(),
+                      ),
+                    );
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -81,18 +118,29 @@ class _ListeCooperativeState extends State<ListeCooperative> {
                     padding: EdgeInsets.all(15.0),
                     crossAxisSpacing: 16.0,
                     mainAxisSpacing: 16.0,
-                    children: cooperativeImageUrls.map((url) {
-                      return Column(
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              url,
-                              fit: BoxFit.cover,
+                    children: cooperatives.map((cooperative) {
+                      return GestureDetector(
+                        onTap: (){
+
+                        },
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Image.file(
+                                File(cooperative.imagePath),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Text('COOPERATIVE ${cooperativeImageUrls.indexOf(url) + 1}'),
-                        ],
+                            SizedBox(height: 8.0),
+                            Text(
+                              cooperative.nom,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     }).toList(),
                   ),

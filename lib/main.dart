@@ -10,6 +10,7 @@ import 'package:tuloss_coo/pages/cooperative/liste2.dart';
 import 'package:tuloss_coo/pages/formation/accueil.dart';
 import 'package:tuloss_coo/pages/membre/accueil.dart';
 import 'package:tuloss_coo/pages/membre/add.dart';
+import 'package:tuloss_coo/pages/membre/liste.dart';
 import 'package:tuloss_coo/pages/signature.dart';
 import 'package:tuloss_coo/widget/theme.dart';
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeClass.lightTheme,
       darkTheme: ThemeClass.darkTheme,
-      home: AddMember(),
+      home: LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
 Future<void> _initHive() async {
   await Hive.initFlutter();
   await Hive.openBox("cooperative");
-  await Hive.openBox("membres");
-  await Hive.openBox("formation");
+  //await Hive.openBox("membres");
+  //await Hive.openBox("formation");
+  await Hive.openBox("admins");
 }
 

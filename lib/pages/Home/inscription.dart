@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:tuloss_coo/models/Admin.dart';
+import 'package:tuloss_coo/pages/Home/connexion.dart';
+
+import '../../models/database.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -7,7 +13,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  String _typeUtilisateur = 'Membre';
   final _nomController = TextEditingController();
   final _prenomController = TextEditingController();
   DateTime _dateNaissance = DateTime(1900, 1, 1);
@@ -15,6 +20,54 @@ class _RegisterPageState extends State<RegisterPage> {
   final _adresseController = TextEditingController();
   final _emailController = TextEditingController();
   final _motDePasseController = TextEditingController();
+
+  Future<void> resetDatabase() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'MaCoop.db'); // Utilisez le nom réel de votre base de données
+    await deleteDatabase(path);
+  }
+
+
+  Future<void> enregistrerMembre() async {
+    print("Let's go");
+
+
+    // Créer un objet Membre avec les données du formulaire
+    final admin = Admin(
+      nom: _nomController.text,
+      prenom: _prenomController.text,
+      telephone: _telephoneController.text,
+      adresse: _adresseController.text,
+      email: _emailController.text,
+      dateOfbirth: "$_dateNaissance",
+      password: _motDePasseController.text,
+    );
+
+    try {
+      // Utilisez DatabaseHelper pour insérer le nouveau membre dans la base de données
+      final databaseHelper = DatabaseHelper.instance;
+      final int id = await databaseHelper.insertAdmin(admin);
+      print('Membre enregistré avec l\'ID: $id');
+
+      // Vérifiez si l'id n'est pas null (ou, dans ce cas, puisque `id` est un int, vérifiez qu'il est supérieur à 0)
+      if (id > 0) {
+        print('Membre enregistré avec l\'ID: $id');
+        // Naviguez vers une nouvelle page
+        Navigator.push(
+          this.context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      } else {
+        // Gérez le cas où l'id est 0 ou null, ce qui indiquerait un échec de l'insertion
+        print('Échec de l\'enregistrement du membre');
+      }
+
+    } catch (e) {
+      print('Erreur lors de l\'enregistrement du membre: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,25 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 16.0),
-                  DropdownButtonFormField<String>(
-                    value: _typeUtilisateur,
-                    onChanged: (value) {
-                      setState(() {
-                        _typeUtilisateur = value!;
-                      });
-                    },
-                    items: ['Membre', 'Administrateur', 'Gestionnaire']
-                        .map((value) => DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    ))
-                        .toList(),
-                    decoration: InputDecoration(
-                      labelText: 'Type utilisateur',
-                      border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 16.0),
@@ -103,6 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(height: 16.0),
                   TextField(
                     controller: _telephoneController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'Téléphone',
                       border: OutlineInputBorder(),
@@ -137,6 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ElevatedButton(
                     onPressed: () {
                       // Action pour l'inscription
+                      enregistrerMembre();
                     },
                     child: Text('INSCRIRE'),
                   ),

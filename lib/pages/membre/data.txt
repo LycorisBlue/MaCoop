@@ -1,0 +1,2 @@
+user: macoop@gmail.com
+password: azerty

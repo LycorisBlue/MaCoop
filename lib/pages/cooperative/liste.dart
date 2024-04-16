@@ -1,5 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tuloss_coo/models/database.dart';
+
+import '../../models/Cooperative.dart';
 import 'package:tuloss_coo/pages/cooperative/add.dart';
+
+import '../Home/home.dart';
+
 
 class ListeCooperative extends StatefulWidget {
   @override
@@ -7,33 +16,19 @@ class ListeCooperative extends StatefulWidget {
 }
 
 class _ListeCooperativeState extends State<ListeCooperative> {
-  final List<String> cooperativeImageUrls = [
-    'https://i.pinimg.com/564x/8c/14/cf/8c14cf8b211219bd40e58e223a4ee700.jpg',
-    'https://i.pinimg.com/564x/94/f4/d9/94f4d93b3b8f404dcb12232f1404be7a.jpg',
-    'https://i.pinimg.com/564x/77/11/e5/7711e5ec546bb22473563f6fdfaf32e1.jpg',
-    'https://i.pinimg.com/564x/e4/34/ea/e434ea1eee78a08980baf5703b4d2761.jpg', // Ajoutez plus d'URLs ici si nécessaire
-  ];
+  late Future<List<Cooperative>> _listeCooperatives;
+  final Box _boxLogin = Hive.box("admins");
+
+  @override
+  void initState() {
+    super.initState();
+    _listeCooperatives = DatabaseHelper.instance.cooperatives(); // Assurez-vous que votre fonction membres() est accessible via votre instance DatabaseHelper
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Bienvenue John'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              // Action pour l'icône Accueil
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              // Action pour l'icône Quitter
-            },
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(boxLogin: _boxLogin,),
       body: Center(
         child: Container(
           width: double.infinity,
@@ -45,7 +40,12 @@ class _ListeCooperativeState extends State<ListeCooperative> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCooperative(),
+                      ),
+                    );
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -60,7 +60,7 @@ class _ListeCooperativeState extends State<ListeCooperative> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  'Liste de coopératives',
+                  'Liste des coopératives',
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
@@ -75,33 +75,68 @@ class _ListeCooperativeState extends State<ListeCooperative> {
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.8,
-                    padding: EdgeInsets.all(15.0),
-                    crossAxisSpacing: 16.0,
-                    mainAxisSpacing: 16.0,
-                    children: cooperativeImageUrls.map((url) {
-                      return Column(
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              url,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Text('COOPERATIVE ${cooperativeImageUrls.indexOf(url) + 1}'),
-                        ],
-                      );
-                    }).toList(),
-                  ),
+                  child: GirdView(liste: _listeCooperatives),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class GirdView extends StatelessWidget {
+  const GirdView({
+    super.key,
+    required Future<List<Cooperative>> liste,
+  }) : _listeMembres = liste;
+
+  final Future<List<Cooperative>> _listeMembres;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Cooperative>>(
+      future: _listeMembres,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Erreur de chargement des membres'));
+        } else if (snapshot.hasData) {
+          return GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 0.8,
+            padding: EdgeInsets.all(15.0),
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            children: List.generate(snapshot.data!.length, (index) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Ici, je suppose que 'picture' est un lien vers une image. Vous devrez peut-être ajuster cela en fonction de vos données.
+                  Expanded(
+                    child: Image.file(
+                      File(snapshot.data![index].imagePath),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Text(
+                    snapshot.data![index].nom,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                ],
+              );
+
+            }),
+          );
+        } else {
+          return Center(child: Text('Aucun membre trouvé'));
+        }
+      },
     );
   }
 }

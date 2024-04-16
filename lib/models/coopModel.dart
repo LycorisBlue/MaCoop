@@ -64,28 +64,3 @@ class Cooperative {
     required this.sections,
   });
 }
-
-class Utilisateur {
-  int? id;
-  String nom;
-  String prenom;
-  String picture;
-  String dateOfBirth;
-  String telephone;
-  String adresse;
-  String email;
-
-  Utilisateur({this.id, required this.nom, required this.picture, required this.prenom, required this.dateOfBirth, required this.adresse, required this.telephone, required this.email});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'nom': nom,
-      'prenom': prenom,
-      'password': dateOfBirth,
-      'telephone': telephone,
-      'adresse': adresse,
-      'email': email
-    };
-  }
-}

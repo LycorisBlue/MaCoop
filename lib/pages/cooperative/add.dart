@@ -3,10 +3,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:hive/hive.dart';
-import 'package:tuloss_coo/pages/cooperative/copy.dart';
+import 'package:tuloss_coo/pages/cooperative/liste.dart';
 import 'dart:io';
 
-import '../../models/coopModel.dart';
+//import '../../models/coopModel.dart';
+import '../../models/Cooperative.dart';
+import '../../models/database.dart';
 
 
 
@@ -57,7 +59,7 @@ class _AddCooperativeState extends State<AddCooperative> {
     }
     print(finalImagePath);
 
-    FormData formData = FormData(
+    final cooperative = Cooperative(
       nom: _nomController.text,
       president: _presidentController.text,
       adg: _adgController.text,
@@ -68,17 +70,23 @@ class _AddCooperativeState extends State<AddCooperative> {
       sections: _sections,
     );
 
-    List<dynamic> existingData = _boxCoop.get('data', defaultValue: []);
-    existingData.add(formData.toJson());
+    try {
+      // Utilisez DatabaseHelper pour insérer le nouveau membre dans la base de données
+      final databaseHelper = DatabaseHelper.instance;
+      final int id = await databaseHelper.insertCooperative(cooperative);
+      print('Membre enregistré avec l\'ID: $id');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ListeCooperative(),
+        ),
+      );
 
-    await _boxCoop.put('data', existingData);
-    print(_boxCoop.get('data'));
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListeCooperative(),
-      ),
-    );
+    } catch (e) {
+      print('Erreur lors de l\'enregistrement du membre: $e');
+    }
+
+
   }
 
   @override

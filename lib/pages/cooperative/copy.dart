@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tuloss_coo/pages/Home/home.dart';
 import 'package:tuloss_coo/pages/cooperative/add.dart';
 
 import '../../models/coopModel.dart';
@@ -12,13 +13,8 @@ class ListeCooperative extends StatefulWidget {
 }
 
 class _ListeCooperativeState extends State<ListeCooperative> {
-  final List<String> cooperativeImageUrls = [
-    'https://i.pinimg.com/564x/8c/14/cf/8c14cf8b211219bd40e58e223a4ee700.jpg',
-    'https://i.pinimg.com/564x/94/f4/d9/94f4d93b3b8f404dcb12232f1404be7a.jpg',
-    'https://i.pinimg.com/564x/77/11/e5/7711e5ec546bb22473563f6fdfaf32e1.jpg',
-    'https://i.pinimg.com/564x/e4/34/ea/e434ea1eee78a08980baf5703b4d2761.jpg', // Ajoutez plus d'URLs ici si nécessaire
-  ];
 
+  final Box _boxLogin = Hive.box("admins");
   List<Cooperative> cooperatives = [];
 
   @override
@@ -49,23 +45,7 @@ class _ListeCooperativeState extends State<ListeCooperative> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Bienvenue John'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              // Action pour l'icône Accueil
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              // Action pour l'icône Quitter
-            },
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(boxLogin: _boxLogin,),
       body: Center(
         child: Container(
           width: double.infinity,
